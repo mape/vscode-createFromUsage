@@ -1,4 +1,4 @@
-# VSCode - Create from usage
+# VSCode - Create From Usage
 "Create from usage" is a Visual Studio Code extension that automatically generates variable declarations based on uninitialized variables in use. It uses the TypeScript type information to infer the wanted type.
 
 Press `Ctrl+ArrowUp` to create an uninitiated variable.
