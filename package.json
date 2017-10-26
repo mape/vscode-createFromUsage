@@ -2,7 +2,7 @@
 	"name": "vscode-createfromusage",
 	"displayName": "Create From Usage",
 	"description": "Automatically generates a variable declaration based on TypeScript type information.",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"publisher": "mape",
 	"icon": "images/icon.png",
 	"galleryBanner": {
@@ -40,7 +40,7 @@
 		"keybindings": [
 			{
 				"command": "createFromUsage.createVariable",
-				"key": "Ctrl+Up"
+				"key": "Ctrl+Alt+T"
 			}
 		],
 		"configuration": {
