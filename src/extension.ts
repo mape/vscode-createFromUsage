@@ -49,7 +49,7 @@ function runCommand(
 export function activate(context: vs.ExtensionContext): void {
 	context.subscriptions.push(
 		vs.commands.registerCommand('createFromUsage.createVariable', () => {
-			const commandName = 'Create from usage';
+			const commandName = 'Create From Usage';
 			runCommand(
 				commandName,
 				vs.window.activeTextEditor.document,
