@@ -117,7 +117,7 @@ export class Creator implements vs.Disposable {
 			s + v
 		));
 
-		const types = label.split(' | ');
+		const types = label.split(' | ').filter(type => type !== 'undefined');
 
 		if (label.match(/: any/)) {
 			return this.showFailureMessage();
