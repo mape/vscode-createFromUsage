@@ -31,6 +31,40 @@ export class Creator implements vs.Disposable {
 		};
 		return defaults[type] || type;
 	}
+
+	private getCompilerOptions() {
+		const scriptsDirectory = path.dirname(this.editor.document.fileName);
+		const configPath = ts.findConfigFile(
+			scriptsDirectory,
+			ts.sys.fileExists
+		);
+
+		const configJson = ts.readConfigFile(
+			configPath,
+			ts.sys.readFile
+		);
+		if (configJson.error) {
+			return {};
+		}
+
+		const config = ts.parseJsonConfigFileContent(
+			configJson.config,
+			{
+				readDirectory: ts.sys.readDirectory,
+				fileExists: ts.sys.fileExists,
+				readFile: ts.sys.readFile,
+				useCaseSensitiveFileNames: false
+			},
+			scriptsDirectory
+		);
+
+		if (config.errors.length) {
+			return {};
+		}
+
+		return config.options;
+	}
+
 	public createFromUsage(editor: vs.TextEditor) {
 		this.editor = editor;
 
@@ -263,7 +297,7 @@ export class Creator implements vs.Disposable {
 						fileContent = doc.getText();
 						this.scriptVersion[fileName].version += 1;
 					} else {
-						fileContent = fs.readFileSync(fileName).toString();
+						fileContent = ts.sys.readFile(fileName);
 					}
 				} catch (e) {
 					return undefined;
@@ -291,9 +325,7 @@ export class Creator implements vs.Disposable {
 			getCurrentDirectory: () => (
 				process.cwd()
 			),
-			getCompilationSettings: () => (
-				{}
-			),
+			getCompilationSettings: () => this.getCompilerOptions(),
 			getDefaultLibFileName: (options) => (
 				ts.getDefaultLibFilePath(options)
 			),
