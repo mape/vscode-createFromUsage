@@ -2,7 +2,7 @@
 	"name": "vscode-createfromusage",
 	"displayName": "Create From Usage",
 	"description": "Automatically generates a variable declaration based on TypeScript type information.",
-	"version": "0.1.7",
+	"version": "0.1.8",
 	"publisher": "mape",
 	"icon": "images/icon.png",
 	"galleryBanner": {

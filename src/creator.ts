@@ -33,9 +33,11 @@ export class Creator implements vs.Disposable {
 	}
 
 	private getCompilerOptions() {
-		const scriptsDirectory = path.dirname(this.editor.document.fileName);
+		const fileDir = (
+			path.dirname(this.editor.document.fileName).replace(/\\/g, '/')
+		);
 		const configPath = ts.findConfigFile(
-			scriptsDirectory,
+			fileDir,
 			ts.sys.fileExists
 		);
 
@@ -55,7 +57,7 @@ export class Creator implements vs.Disposable {
 				readFile: ts.sys.readFile,
 				useCaseSensitiveFileNames: false
 			},
-			scriptsDirectory
+			fileDir
 		);
 
 		if (config.errors.length) {
