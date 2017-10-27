@@ -136,7 +136,7 @@ export class Creator implements vs.Disposable {
 			if (typeof possibleTypes[typeIndex] === 'undefined') {
 				return null;
 			}
-			if (!node || depth > 4) {
+			if (!node) {
 				return findParent(focusedNode, typeIndex + 1, 0);
 			}
 
