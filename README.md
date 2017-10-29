@@ -3,7 +3,8 @@
 
 Press `Ctrl+Alt+T` to create an uninitiated variable.
 
-[![License](https://img.shields.io/github/license/mape/vscode-createfromusage.svg)](https://github.com/mape/vscode-createFromUsage/blob/master/LICENSE) ![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version/mape.vscode-createFromUsage.svg)
+[![License](https://img.shields.io/github/license/mape/vscode-createfromusage.svg)](https://github.com/mape/vscode-createFromUsage/blob/master/LICENSE) [![License](https://vsmarketplacebadge.apphb.com/version/mape.vscode-createFromUsage.svg)](https://marketplace.visualstudio.com/items?itemName=mape.vscode-createfromusage)
+
 ## Demo
 ![Demo](https://h.ma.pe/createFromUsagePreview.gif)
 
