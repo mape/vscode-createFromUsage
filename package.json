@@ -2,7 +2,7 @@
 	"name": "vscode-createfromusage",
 	"displayName": "Create From Usage",
 	"description": "Automatically generates a variable declaration based on TypeScript type information.",
-	"version": "0.1.9",
+	"version": "0.1.10",
 	"publisher": "mape",
 	"icon": "images/icon.png",
 	"galleryBanner": {
@@ -69,5 +69,10 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/mape/vscode-createFromUsage"
+	},
+	"__metadata": {
+		"id": "f309138b-6935-4f87-a568-ee583227b696",
+		"publisherDisplayName": "mape",
+		"publisherId": "a66fd1e4-8d3f-4371-ad65-6e6bd624716c"
 	}
 }

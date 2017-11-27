@@ -46,9 +46,13 @@ export class Creator implements vs.Disposable {
 			ts.sys.readFile
 		);
 		if (configJson.error) {
+			vs.window.showErrorMessage(
+				configJson.error.messageText.toString()
+			);
+
 			return {};
 		}
-
+		const cwd = configPath.replace(/tsconfig.json/i, '');
 		const config = ts.parseJsonConfigFileContent(
 			configJson.config,
 			{
@@ -57,10 +61,12 @@ export class Creator implements vs.Disposable {
 				readFile: ts.sys.readFile,
 				useCaseSensitiveFileNames: false
 			},
-			fileDir
+			cwd
 		);
-
 		if (config.errors.length) {
+			config.errors.map(err => err.messageText).forEach(error => {
+				vs.window.showErrorMessage(error.toString());
+			});
 			return {};
 		}
 
