@@ -73,7 +73,7 @@ export class Creator implements vs.Disposable {
 		return config.options;
 	}
 
-	public createFromUsage(editor: vs.TextEditor) {
+	public createFromUsage(editor: vs.TextEditor, inline: boolean = false) {
 		this.editor = editor;
 
 		const filePath = this.getDocumentFileName(this.editor.document);
@@ -101,7 +101,8 @@ export class Creator implements vs.Disposable {
 			filePath,
 			position,
 			sourceFile,
-			focusedNode
+			focusedNode,
+			inline
 		);
 	}
 
@@ -109,7 +110,8 @@ export class Creator implements vs.Disposable {
 		filePath: string,
 		position: number,
 		sourceFile: ts.SourceFile,
-		focusedNode: ts.Node
+		focusedNode: ts.Node,
+		inline: boolean
 	) {
 		const getSignatureHelp = this.languageService.getSignatureHelpItems;
 		const help = getSignatureHelp(filePath, position);
@@ -162,20 +164,29 @@ export class Creator implements vs.Disposable {
 		}).join('\n');
 		const indent = previousLine.match(/\s*/).toString();
 		const codeSnippet = new vs.SnippetString();
-		codeSnippet.appendText(indent);
+		if (!inline) {
+			codeSnippet.appendText(indent);
+		}
 
-		const varName = focusedNode.getFullText().trim();
 		let tabIndex = 0;
 
-		codeSnippet.appendText('const ' + varName + ' = ');
+		if (!inline) {
+			const varName = focusedNode.getFullText().trim();
+			codeSnippet.appendText('const ' + varName + ' = ');
+		}
 		types.forEach((rawType) => {
 			let isArray = rawType.match(/\[\]$/);
-			let type = rawType.replace('[]', '').replace(/.*?: /, '');
+			let type = rawType.replace(/.*?: /, '');
 			let isFunction = false;
 
 			if (type.match(/=>/)) {
 				isFunction = true;
-				type = type.replace(/=>.*/, '=> {\n' + indent + '}');
+				if (!inline) {
+					type = type.replace(/=>.*/, '=> {\n' + indent + '}');
+				} else {
+					// Strip types as they should be inferred
+					type = type.replace(/([a-z0-9+]):.*?([,)])/ig, '$1$2');
+				}
 			}
 
 			if (types.length > 1) {
@@ -229,16 +240,28 @@ export class Creator implements vs.Disposable {
 						);
 						codeSnippet.appendText('\'');
 					} else {
-						codeSnippet.appendPlaceholder(
-							this.typeDefaultLookup(type),
-							++tabIndex
-						);
+						if (isFunction && inline) {
+							const parts = type.split('}');
+							codeSnippet.appendText(parts[0]);
+							codeSnippet.appendPlaceholder(
+								'/* code... */',
+								++tabIndex
+							);
+							codeSnippet.appendText('}');
+						} else {
+							codeSnippet.appendPlaceholder(
+								this.typeDefaultLookup(type),
+								++tabIndex
+							);
+						}
 					}
 					if (isArray) {
 						codeSnippet.appendText(']');
 					}
 				}
-				codeSnippet.appendText(';\n');
+				if (!inline) {
+					codeSnippet.appendText(';\n');
+				}
 			}
 		});
 		if (types.length > 1) {
@@ -248,45 +271,64 @@ export class Creator implements vs.Disposable {
 		const nextArgumentIndex = help.argumentIndex + 1;
 		const splitPreviousLine = previousLine.split(',');
 
-		splitPreviousLine.forEach((part, i) => {
-			if (i === nextArgumentIndex) {
-				const argName = part.match(/[a-z0-9]+/i).toString();
-				const parts = part.split(argName);
-				codeSnippet.appendText(parts[0]);
-				codeSnippet.appendPlaceholder(argName, ++tabIndex);
-				codeSnippet.appendText(parts[1]);
-			} else {
-				codeSnippet.appendText(part);
-			}
+		if (!inline) {
+			splitPreviousLine.forEach((part, i) => {
+				if (i === nextArgumentIndex) {
+					const argName = part.match(/[a-z0-9]+/i).toString();
+					const parts = part.split(argName);
+					codeSnippet.appendText(parts[0]);
+					codeSnippet.appendPlaceholder(argName, ++tabIndex);
+					codeSnippet.appendText(parts[1]);
+				} else {
+					codeSnippet.appendText(part);
+				}
 
-			const notLast = i !== splitPreviousLine.length - 1;
-			if (notLast) {
-				codeSnippet.appendText(',');
-			}
-		});
+				const notLast = i !== splitPreviousLine.length - 1;
+				if (notLast) {
+					codeSnippet.appendText(',');
+				}
+			});
+		}
 
+		if (inline) {
+			const range = this.getNodeRange(sourceFile, focusedNode);
+			this.editor.insertSnippet(codeSnippet, range);
+		} else {
+			const range = this.getNodeRange(sourceFile, fullNode, true);
+			this.editor.insertSnippet(codeSnippet, range);
+		}
+
+		if (!inline) {
+			vscode.commands.executeCommand('editor.action.triggerParameterHints');
+		}
+	}
+
+	private getNodeRange(
+		sourceFile: ts.SourceFile,
+		node: any,
+		overrideCharacter: boolean = false
+	) {
 		const lineStart = ts.getLineAndCharacterOfPosition(
 			sourceFile,
-			fullNode.getStart()
+			node.getStart()
 		);
 		const lineEnd = ts.getLineAndCharacterOfPosition(
 			sourceFile,
-			fullNode.getEnd()
+			node.getEnd()
 		);
 
-		const start = new vs.Position(
-			lineStart.line,
-			0
-		);
-		const end = new vs.Position(
-			lineEnd.line,
+		const start = new vs.Position
+			(lineStart.line,
+			overrideCharacter ? 0 : lineStart.character
+			);
+
+		const end = new vs.Position
+			(lineEnd.line,
 			lineEnd.character
-		);
+			);
 
 		const range = new vs.Range(start, end);
-		this.editor.insertSnippet(codeSnippet, range);
-
-		vscode.commands.executeCommand('editor.action.triggerParameterHints');
+		return range;
 	}
 
 	private getLanguageServiceHost(): ts.LanguageServiceHost {

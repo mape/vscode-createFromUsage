@@ -15,6 +15,7 @@ The following commands are bound by default when the extension is installed.
 | Command                      | Keybinding         |
 | ---------------------------- | ------------------ |
 | createFromUsage.createVariable | `Ctrl+Alt+T`     |
+| createFromUsage.createVariableInline | `Ctrl+Alt+Shift+T`     |
 
 ## Thanks
 Thanks to https://github.com/joelday/vscode-docthis for being the jumping point for this extension.

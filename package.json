@@ -2,7 +2,7 @@
 	"name": "vscode-createfromusage",
 	"displayName": "Create From Usage",
 	"description": "Automatically generates a variable declaration based on TypeScript type information.",
-	"version": "0.1.11",
+	"version": "0.2.0",
 	"publisher": "mape",
 	"icon": "images/icon.png",
 	"galleryBanner": {
@@ -28,12 +28,19 @@
 			{
 				"command": "createFromUsage.createVariable",
 				"title": "Create From Usage"
+			},
+			{
+				"command": "createFromUsage.createVariableInline",
+				"title": "Create From Usage inline"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
 					"command": "createFromUsage.createVariable"
+				},
+				{
+					"command": "createFromUsage.createVariableInline"
 				}
 			]
 		},
@@ -41,6 +48,10 @@
 			{
 				"command": "createFromUsage.createVariable",
 				"key": "Ctrl+Alt+T"
+			},
+			{
+				"command": "createFromUsage.createVariableInline",
+				"key": "Ctrl+Alt+Shift+T"
 			}
 		],
 		"configuration": {

@@ -49,9 +49,8 @@ function runCommand(
 export function activate(context: vs.ExtensionContext): void {
 	context.subscriptions.push(
 		vs.commands.registerCommand('createFromUsage.createVariable', () => {
-			const commandName = 'Create From Usage';
 			runCommand(
-				commandName,
+				'Create From Usage',
 				vs.window.activeTextEditor.document,
 				() => {
 					creator.createFromUsage(
@@ -60,5 +59,19 @@ export function activate(context: vs.ExtensionContext): void {
 				}
 			);
 		}
-	));
+		));
+	context.subscriptions.push(
+		vs.commands.registerCommand('createFromUsage.createVariableInline', () => {
+			runCommand(
+				'Create From Usage inline',
+				vs.window.activeTextEditor.document,
+				() => {
+					creator.createFromUsage(
+						vs.window.activeTextEditor,
+						true
+					);
+				}
+			);
+		}
+		));
 }
