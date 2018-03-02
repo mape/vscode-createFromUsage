@@ -186,6 +186,7 @@ export class Creator implements vs.Disposable {
 				} else {
 					// Strip types as they should be inferred
 					type = type.replace(/([a-z0-9+]):.*?([,)])/ig, '$1$2');
+					type = type.replace(/=>.*/, '=> {}');
 				}
 			}
 
