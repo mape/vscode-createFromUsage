@@ -119,7 +119,7 @@ export class Creator implements vs.Disposable {
 			return this.showFailureMessage();
 		}
 
-		const item = help.items[0].parameters[help.argumentIndex];
+		const item = help.items[help.selectedItemIndex].parameters[help.argumentIndex];
 
 		const label = item.displayParts.map(part => (
 			part.text
